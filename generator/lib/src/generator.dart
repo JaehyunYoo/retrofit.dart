@@ -1180,10 +1180,6 @@ $returnAsyncWrapper* $_valueVar;
                 mapperCode = refer(
                   '(dynamic i) => JsonMapper.fromMap<${_displayString(innerReturnType)}>(i as $castType)!',
                 );
-              case retrofit.Parser.DartMappable:
-                mapperCode = refer(
-                  '(dynamic i) => ${_displayString(innerReturnType)}Mapper.fromMap(i as $castType)',
-                );
               case retrofit.Parser.FlutterCompute:
                 throw Exception('Unreachable code');
             }
@@ -1265,15 +1261,6 @@ $returnAsyncWrapper* $_valueVar;
         .toList()
     )
 ''');
-              case retrofit.Parser.DartMappable:
-                mapperCode = refer('''
-(k, dynamic v) =>
-    MapEntry(
-      k, (v as List)
-        .map((i) => ${_displayString(type)}Mapper.fromMap(i as Map<String, dynamic>))
-        .toList()
-    )
-''');
               case retrofit.Parser.FlutterCompute:
                 log.warning('''
 Return types should not be a map when running `Parser.FlutterCompute`, as spawning an isolate per entry is extremely intensive.
@@ -1342,10 +1329,6 @@ You should create a new class to encapsulate the response.
               case retrofit.Parser.DartJsonMapper:
                 mapperCode = refer(
                   '(k, dynamic v) => MapEntry(k, JsonMapper.fromMap<${_displayString(secondType)}>(v as Map<String, dynamic>)!)',
-                );
-              case retrofit.Parser.DartMappable:
-                mapperCode = refer(
-                  '(k, dynamic v) => MapEntry(k, ${_displayString(secondType)}Mapper.fromMap(v as Map<String, dynamic>))',
                 );
               case retrofit.Parser.FlutterCompute:
                 log.warning('''
