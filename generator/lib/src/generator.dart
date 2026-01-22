@@ -1535,10 +1535,7 @@ You should create a new class to encapsulate the response.
               mapperCode = refer(
                 'JsonMapper.fromMap<${_displayString(returnType)}>($_resultVar.data!)!',
               );
-            case retrofit.Parser.DartMappable:
-              mapperCode = refer(
-                '${_displayString(returnType)}Mapper.fromMap($_resultVar.data!)',
-              );
+           
             case retrofit.Parser.FlutterCompute:
               mapperCode = refer(
                 'await compute(deserialize${_displayString(returnType).replaceFirst('<', '').replaceFirst('>', '')}, $_resultVar.data!)',
@@ -2178,10 +2175,6 @@ if (T != dynamic &&
                     : refer(p.displayName).property('toMap').call([]);
               case retrofit.Parser.DartJsonMapper:
                 value = refer(p.displayName);
-              case retrofit.Parser.DartMappable:
-                value = p.type.nullabilitySuffix == NullabilitySuffix.question
-                    ? refer(p.displayName).nullSafeProperty('toMap').call([])
-                    : refer(p.displayName).property('toMap').call([]);
               case retrofit.Parser.FlutterCompute:
                 value = refer(
                   'await compute(serialize${_displayString(p.type)}, ${p.displayName})',
@@ -2221,10 +2214,6 @@ if (T != dynamic &&
                 : refer(p.displayName).property('toMap').call([]);
           case retrofit.Parser.DartJsonMapper:
             value = refer(p.displayName);
-          case retrofit.Parser.DartMappable:
-            value = p.type.nullabilitySuffix == NullabilitySuffix.question
-                ? refer(p.displayName).nullSafeProperty('toMap').call([])
-                : refer(p.displayName).property('toMap').call([]);
           case retrofit.Parser.FlutterCompute:
             value = refer(
               'await compute(serialize${_displayString(p.type)}, ${p.displayName})',
@@ -2277,10 +2266,6 @@ if (T != dynamic &&
                     : refer(displayName).property('toMap').call([]);
               case retrofit.Parser.DartJsonMapper:
                 value = refer(displayName);
-              case retrofit.Parser.DartMappable:
-                value = type.nullabilitySuffix == NullabilitySuffix.question
-                    ? refer(displayName).nullSafeProperty('toMap').call([])
-                    : refer(displayName).property('toMap').call([]);
               case retrofit.Parser.FlutterCompute:
                 value = refer(
                   'await compute(serialize${_displayString(type)}, $displayName)',
@@ -2308,10 +2293,6 @@ if (T != dynamic &&
                 : refer(displayName).property('toMap').call([]);
           case retrofit.Parser.DartJsonMapper:
             value = refer(displayName);
-          case retrofit.Parser.DartMappable:
-            value = p.type.nullabilitySuffix == NullabilitySuffix.question
-                ? refer(displayName).nullSafeProperty('toMap').call([])
-                : refer(displayName).property('toMap').call([]);
           case retrofit.Parser.FlutterCompute:
             value = refer(
               'await compute(serialize${_displayString(p.type)}, ${p.displayName})',
@@ -2441,16 +2422,6 @@ if (T != dynamic &&
                   .statement,
             );
           case retrofit.Parser.MapSerializable:
-          case retrofit.Parser.DartMappable:
-            blocks.add(
-              declareFinal(dataVar)
-                  .assign(
-                    refer('''
-            ${bodyName.displayName}$nullabilitySuffix.map((e) => e.toMap()).toList()
-            '''),
-                  )
-                  .statement,
-            );
           case retrofit.Parser.FlutterCompute:
             final compute =
                 'await compute(serialize${_displayString(_genericOf(bodyName.type))}List, ${bodyName.displayName})';
@@ -2588,23 +2559,6 @@ if (T != dynamic &&
                   );
                 }
               case retrofit.Parser.MapSerializable:
-              case retrofit.Parser.DartMappable:
-                if (bodyName.type.nullabilitySuffix !=
-                    NullabilitySuffix.question) {
-                  blocks.add(
-                    refer('$dataVar.addAll').call([
-                      refer('${bodyName.displayName}.toMap()'),
-                    ]).statement,
-                  );
-                } else {
-                  blocks.add(
-                    refer('$dataVar.addAll').call([
-                      refer(
-                        '${bodyName.displayName}?.toMap() ?? <String, dynamic>{}',
-                      ),
-                    ]).statement,
-                  );
-                }
               case retrofit.Parser.FlutterCompute:
                 if (bodyName.type.nullabilitySuffix !=
                     NullabilitySuffix.question) {
@@ -3745,10 +3699,6 @@ MultipartFile.fromFileSync(i.path,
                 : refer(displayName).property('toMap').call([]);
           case retrofit.Parser.DartJsonMapper:
             value = refer(displayName);
-          case retrofit.Parser.DartMappable:
-            value = p.type.nullabilitySuffix == NullabilitySuffix.question
-                ? refer(displayName).nullSafeProperty('toMap').call([])
-                : refer(displayName).property('toMap').call([]);
           case retrofit.Parser.FlutterCompute:
             value = refer(
               'await compute(serialize${_displayString(p.type)}, ${p.displayName})',
@@ -3778,7 +3728,6 @@ MultipartFile.fromFileSync(i.path,
         final toJson = ele.lookUpMethod(name: 'toJson', library: ele.library);
         return toJson == null;
       case retrofit.Parser.MapSerializable:
-      case retrofit.Parser.DartMappable:
       case retrofit.Parser.FlutterCompute:
         return false;
     }
@@ -3790,7 +3739,6 @@ MultipartFile.fromFileSync(i.path,
       case retrofit.Parser.JsonSerializable:
       case retrofit.Parser.DartJsonMapper:
       case retrofit.Parser.MapSerializable:
-      case retrofit.Parser.DartMappable:
         return false;
       case retrofit.Parser.FlutterCompute:
         return !ele.functions.any(
