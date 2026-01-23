@@ -28,7 +28,7 @@ enum Parser {
 
   /// Each model class must add annotation '@MappableClass()'
   /// For more detail, please visit 'https://github.com/schultek/dart_mappable'
-  DartMappable,
+  // DartMappable,
 
   /// Parse on a separate isolate using `compute` (Flutter only).
   ///
